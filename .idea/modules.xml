@@ -2,11 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-<<<<<<< HEAD
-      <module fileurl="file://$PROJECT_DIR$/.idea/untitled.iml" filepath="$PROJECT_DIR$/.idea/untitled.iml" />
-=======
       <module fileurl="file://$PROJECT_DIR$/.idea/coup-core.iml" filepath="$PROJECT_DIR$/.idea/coup-core.iml" />
->>>>>>> 858a6a189a82fe706498970ef364e9f86546de57
     </modules>
   </component>
 </project>

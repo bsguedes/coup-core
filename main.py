@@ -2,8 +2,12 @@
 import logger
 from constants import *
 import settings
-from playercommunication import PlayerCommunication
-pc = PlayerCommunication()
+from playerstub import PlayerStub
 
-for player in settings.players:
-    pc.send_start(player, [DUKE, DUKE])
+players = []
+
+for uri in settings.players_uris:
+    players.append(PlayerStub(uri))
+
+for player in players:
+    player.send_start([DUKE, DUKE])
