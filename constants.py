@@ -1,0 +1,5 @@
+DUKE = "duke"
+CONTESSA = "contessa"
+ASSASSIN = "assassin"
+CAPTAIN = "captain"
+INQUISITOR = "inquisitor"
