@@ -6,6 +6,8 @@ import logging
 class PlayerStub:
     def __init__(self, playeruri):
         self.uri = playeruri
+        self.cards = list()
+        self.coins = 0
 
     def send_start(self, cards):
         opponents = list(settings.players_uris)
@@ -60,3 +62,42 @@ class PlayerStub:
 
     def signal_action(self, opponent, action, targetted_opponent):
         pass
+
+    #Common interactions
+
+    def lose_influence(self):
+        #TODO check if player is not cheating
+        card_to_lose = self.request_lose_influence()
+        self.remove_card(card_to_lose)
+        return card_to_lose
+
+    def send_card_back_to_deck_and_draw_card(self, deck, target_card):
+        self.remove_card(target_card)
+        self.take_card_from_deck(deck)
+        deck.return_card(target_card)
+
+    def change_cards(self, deck, new_card, removed_card):
+        self.remove_card(removed_card)
+        self.add_card(new_card)
+        deck.return_card(removed_card)
+
+    def give_cards(self, card1, card2):
+        self.cards = list()
+        self.add_card(card1)
+        self.add_card(card2)
+        
+    def delta_coins(self, coins):
+        self.coins += coins
+
+    #private methods
+
+    def remove_card(self, card):
+        self.cards.remove(card)
+
+    def add_card(self, card):
+        self.cards.append(card)
+
+    def take_card_from_deck(self, deck):
+        card = deck.draw_card()
+        self.add_card(card)
+
