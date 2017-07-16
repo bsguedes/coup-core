@@ -110,6 +110,8 @@ class PlayerStub:
         self.add_card(card1)
         self.add_card(card2)
 
+
+
     def delta_coins(self, coins):
         self.coins += coins
 
