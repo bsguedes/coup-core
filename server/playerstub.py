@@ -94,6 +94,11 @@ class PlayerStub:
         self.take_card_from_deck(deck)
         deck.return_card(target_card)
 
+    def change_card(self, deck, card_to_change):
+        self.remove_card(card_to_change)
+        deck.return_card(card_to_change)
+        self.add_card(deck.draw_card())
+
     def change_cards(self, deck, new_card, removed_card):
         self.remove_card(removed_card)
         self.add_card(new_card)
