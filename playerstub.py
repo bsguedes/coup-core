@@ -18,6 +18,7 @@ class PlayerStub:
             return response.text
 
     def send_start(self, cards):
+        logging.info('Player start: {}'.format(cards))
         opponents = list(settings.players_uris)
         opponents.remove(self.id)
         payload = {'cards': cards, 'players': opponents, 'coins': settings.starting_coins}
@@ -25,6 +26,7 @@ class PlayerStub:
         return self.__decode_response(r)
 
     def request_play(self, must_coup):
+        logging.info('Player play: {}'.format(must_coup))
         payload = {'must_coup': must_coup}
         r = requests.post(self.uri + "/play/", data=json.dumps(payload))
         return self.__decode_response(r)
