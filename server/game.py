@@ -22,7 +22,7 @@ class Game:
         while not self.is_game_over():
             if current_player.is_alive():
 
-                action = current_player.play(current_player.coins >= 10)
+                action = current_player.play(current_player.coins >= 10, players)
 
                 if action.is_valid(players, player_index):
                     self.signal_new_turn(player_index)
@@ -50,7 +50,8 @@ class Game:
                     pass
             else:
                 pass
-            current_player = self.players[(player_index + 1) % len(players)]
+            player_index = (player_index + 1) % len(players)
+            current_player = self.players[player_index]
 
     def give_cards_and_two_coins(self):
         for player in self.players:
@@ -78,6 +79,11 @@ class Game:
                 count += 1
         return count == 1
 
+    def signal_lost_influence(self, player, card):
+        for player in self.players:
+            if player.is_alive():
+                player.signal_lost_influence(player.id, card)
+
     def signal_new_turn(self, player_index):
         for player in self.players:
             if player.is_alive():
@@ -101,18 +107,15 @@ class Game:
     def signal_challenge(self, challenged_player, card, challenger_player):
         for player in self.players:
             if player.is_alive():
-                player.signal_challenge(self, challenger_player, challenged_player)
+                player.signal_challenge(challenger_player, card, challenged_player)
 
-    def random_other_players(self, player1):
+    def random_other_players(self, player1, player2=None):
         other_players = list(self.players)
         other_players.remove(player1)
-        return shuffle(other_players)
-
-    def random_other_players(self, player1, player2):
-        other_players = list(self.players)
-        other_players.remove(player1)
-        other_players.remove(player2)
-        return shuffle(other_players)
+        if player2:
+            other_players.remove(player2)
+        #TODO retirei shuffle pois nao funcionava (sempre retornava none)
+        return other_players
 
     def resolve_assassination_and_extortion(self, current_player, action):
         no_challenge = True
@@ -253,7 +256,7 @@ class Game:
                         challenge_won = True
                         self.signal_lost_influence(player_blocker, influence)
                 else:
-                    for spectator in random_other_players(current_player, player_blocker):
+                    for spectator in self.random_other_players(current_player, player_blocker):
                         if spectator.request_challenge(action, player_blocker, card):
                             self.signal_challenge(player_blocker, card, spectator)
                             if player_blocker.has_card(card):
