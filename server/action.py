@@ -1,7 +1,13 @@
 import constants
 
 class Action:
+    target = None
+    blockers = None
+    card = None
     def __init__(self):
+        pass
+
+    def resolve_action(self, current_player=None, deck=None):
         pass
 
     def is_valid(self, players, player_index):
@@ -13,7 +19,7 @@ class CoupDEtat(Action):
         Action.__init__(self)
         self.target = target
 
-    def resolve_action(self, current_player):
+    def resolve_action(self, current_player, deck=None):
         current_player.delta_coins(-7)
         self.target.lose_influence()
 
@@ -22,14 +28,14 @@ class ForeignAid(Action):
         Action.__init__(self)
         self.blockers = [constants.DUKE]
 
-    def resolve_action(self, current_player):
+    def resolve_action(self, current_player, deck=None):
         current_player.delta_coins(2)
 
 class Income(Action):
     def __init__(self):
         Action.__init__(self)
 
-    def resolve_action(self, current_player):
+    def resolve_action(self, current_player, deck=None):
         current_player.delta_coins(1)
 
 
@@ -38,7 +44,7 @@ class CollectTaxes(Action):
         Action.__init__(self)
         self.card = constants.DUKE
 
-    def resolve_action(self, current_player):
+    def resolve_action(self, current_player, deck=None):
         current_player.delta_coins(3)
 
 class Investigate(Action):
@@ -69,7 +75,7 @@ class Assassinate(Action):
         self.card = constants.ASSASSIN
         self.blockers = [constants.CONTESSA]
 
-    def resolve_action(self, current_player):
+    def resolve_action(self, current_player, deck=None):
         current_player.delta_coins(-3)
         self.target.lose_influence()
 
@@ -81,7 +87,7 @@ class Extortion(Action):
         self.card = constants.CAPTAIN
         self.blockers = [constants.CAPTAIN, constants.INQUISITOR]
 
-    def resolve_action(self, current_player):
+    def resolve_action(self, current_player, deck=None):
         if self.target.get_coins() >= 2:
             current_player.delta_coins(2)
             self.target.delta_coins(-2)

@@ -1,6 +1,7 @@
 import constants
 import settings
 from deck import Deck
+from action import *
 import random
 
 class Game:
@@ -24,26 +25,22 @@ class Game:
 
                 if action.is_valid(players, player_index):
                     self.signal_new_turn(player_index)
-                    if action.is_targetted():
+                    if action.target:
                         self.signal_targetted_action(current_player, action, action.target)
                     else:
                         self.signal_player_action(current_player, action)
 
                     # resolve
-                    action_name = action.name()
-
-                    if action_name == constants.INCOME:
-                        action.resolve_action(current_player)
-                    elif action_name == constants.COUP:
-                        action.resolve_action(current_player)
-                    elif action_name == constants.ASSASSINATE or action_name == constants.EXTORTION:
+                    if isinstance(action, Assassinate) or isinstance(action, Extortion):
                         self.resolve_assassination_and_extortion(current_player, action)
-                    elif action_name == constants.INVESTIGATE:
-                        self.resolve_investigate(current_player, action)
-                    elif action_name == constants.COLLECT_TAXES or action_name == constants.EXCHANGE:
+                    elif isinstance(action, CollectTaxes) or isinstance(action, Exchange):
                         self.resolve_collect_taxes_and_exchange(current_player, action)
-                    elif action_name == constants.FOREIGN_AID:
+                    elif isinstance(action, ForeignAid):
                         self.resolve_foreign_aid(current_player, action)
+                    elif isinstance(action, Investigate):
+                        self.resolve_investigate(current_player, action)
+                    else:
+                        action.resolve_action(current_player)
 
                     self.signal_status()
 
@@ -52,7 +49,7 @@ class Game:
                     pass
             else:
                 pass
-            current_player = (current_player + 1) % len(players)
+            current_player = self.players[(player_index + 1) % len(players)]
 
     def give_cards_and_two_coins(self):
         for player in self.players:
@@ -61,9 +58,9 @@ class Game:
     def get_global_status(self):
         player_list = []
         for player in self.players:
-            player_dict = {"player": player.name(),
-                           "cards": player.get_visible_cards(),
-                           "coins": player.get_coins()
+            player_dict = {"player": player.id,
+                           "cards": player.cards,
+                           "coins": player.coins
                            }
             player_list += [player_dict]
         return {"players": player_list}
@@ -83,17 +80,17 @@ class Game:
     def signal_new_turn(self, player_index):
         for player in self.players:
             if player.is_alive():
-                player.signal_new_turn(self.players[player_index].name())
+                player.signal_new_turn(self.players[player_index].id)
 
     def signal_targetted_action(self, current_player, action, action_target):
         for player in self.players:
             if player.is_alive():
-                player.signal_action(current_player.name(), action, action_target.name())
+                player.signal_action(current_player.id, action, action_target)
 
     def signal_player_action(self, current_player, action):
         for player in self.players:
             if player.is_alive():
-                player.signal_action(current_player.name(), action, None)
+                player.signal_action(current_player.id, action, None)
 
     def resolve_assassination_and_extortion(self, current_player, action):
         pass
