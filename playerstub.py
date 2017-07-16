@@ -106,6 +106,9 @@ class PlayerStub:
     def delta_coins(self, coins):
         self.coins += coins
 
+    def is_alive(self):
+        return len(self.cards) > 0
+
     #private methods
 
     def remove_card(self, card):

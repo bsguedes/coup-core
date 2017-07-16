@@ -4,6 +4,10 @@ class Action:
     def __init__(self):
         pass
 
+    def is_valid(self, players, player_index):
+        #TODO validation
+        return True
+
 class CoupDEtat(Action):
     def __init__(self, target):
         Action.__init__(self)
