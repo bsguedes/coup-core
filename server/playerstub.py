@@ -2,6 +2,7 @@ import settings
 import requests
 import json
 import logging
+import action
 
 class PlayerStub:
     def __init__(self, playeruri):
@@ -32,7 +33,7 @@ class PlayerStub:
         logging.info('Player play: {}'.format(must_coup))
         payload = {'must_coup': must_coup}
         r = requests.post(self.uri + "/play/", data=json.dumps(payload))
-        return self.__decode_response(r)
+        return action.decode_action_from_dict(self.__decode_response(r))
 
     def request_tries_to_block(self, action, opponent):
         payload = {'action': action, 'opponent': opponent.id}

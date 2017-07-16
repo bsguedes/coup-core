@@ -88,3 +88,22 @@ class Extortion(Action):
         elif self.target.get_coins() == 1:
             current_player.delta_coins(1)
             self.target.delta_coins(-1)
+
+
+def decode_action_from_dict(dict):
+    if dict['action'] == constants.INCOME:
+        return Income()
+    elif dict['action'] == constants.FOREIGN_AID:
+        return ForeignAid()
+    elif dict['action'] == constants.COLLECT_TAXES:
+        return CollectTaxes()
+    elif dict['action'] == constants.ASSASSINATE:
+        return Assassinate(dict['target'])
+    elif dict['action'] == constants.EXTORTION:
+        return Extortion(dict['target'])
+    elif dict['action'] == constants.INVESTIGATE:
+        return Investigate(dict['target'])
+    elif dict['action'] == constants.EXCHANGE:
+        return Exchange()
+    elif dict['action'] == constants.COUP:
+        return CoupDEtat(dict['target'])

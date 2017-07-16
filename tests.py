@@ -10,7 +10,7 @@ opponent_id = players[1].id
 
 matheus = players[0]
 ''' :type: PlayerStub '''
-matheus.send_start([DUKE, DUKE])
-response = matheus.request_play(True)
+matheus.start([DUKE, DUKE])
+response = matheus.play(True)
 if response['action']:
     pass
