@@ -1,9 +1,7 @@
-import constants
 import settings
 from deck import Deck
 from action import *
 import random
-from random import shuffle
 
 class Game:
     def __init__(self, players):
