@@ -115,7 +115,70 @@ class Game:
         return shuffle(other_players)
 
     def resolve_assassination_and_extortion(self, current_player, action):
-        pass
+        no_challenge = True
+        challenge_won = False
+        no_block = True
+        card = action.card
+        target = action.target
+
+        if target.request_challenge(action, current_player, card):
+            self.signal_challenge(current_player, card, target)
+            no_challenge = False
+            if current_player.has_card(card):
+                influence = target.lose_influence()
+                current_player.change_card(self.deck, card)
+                challenge_won = True
+                self.signal_lost_influence(target, influence)
+            else:
+                influence = current_player.lose_influence()
+                self.signal_lost_influence(current_player, influence)
+        else:
+            for spectator in self.random_other_players(current_player, target):
+                if spectator.request_challenge(action, current_player, card):
+                    self.signal_challenge(current_player, card, spectator)
+                    no_challenge = False
+                    if current_player.has_card(card):
+                        influence = spectator.lose_influence()
+                        current_player.change_card(self.deck, card)
+                        challenge_won = True
+                        self.signal_lost_influence(spectator, influence)
+                    else:
+                        influence = current_player.lose_influence()
+                        self.signal_lost_influence(current_player, influence)
+                    break
+        if no_challenge:
+            payload = target.request_tries_to_block(action, current_player)
+            card = payload['card']
+            if payload['attempt_block']:
+                self.signal_blocking(current_player, action, target, card)
+                no_block = False
+                if current_player.request_challenge(action, target, card):
+                    self.signal_challenge(target, card, current_player)
+                    if target.has_card(card):
+                        influence = current_player.lose_influence()
+                        target.change_card(self.deck, card)
+                        self.signal_lost_influence(current_player, influence)
+                    else:
+                        influence = target.lose_influence()
+                        challenge_won = True
+                        self.signal_lost_influence(target, influence)
+                else:
+                    for spectator in self.random_other_players(current_player, target):
+                        if spectator.request_challenge(action, target, card):
+                            self.signal_challenge(target, card, spectator)
+                            if target.has_card(card):
+                                influence = spectator.lose_influence()
+                                target.change_card(self.deck, card)
+                                self.signal_lost_influence(spectator, influence)
+                            else:
+                                influence = target.lose_influence()
+                                challenge_won = True
+                                self.signal_lost_influence(target, influence)
+                            break
+        if (no_block and no_challenge) or challenge_won:
+            action.resolve_action(current_player)
+
+
 
     def resolve_investigate(self, current_player, action):
         no_challenge = True
@@ -154,7 +217,7 @@ class Game:
         no_challenge = True
         challenge_won = False
         card = action.card
-        for challenger in random_other_players(current_player):
+        for challenger in self.random_other_players(current_player):
             if challenger.request_challenge(action, current_player, card):
                 self.signal_challenge(current_player, card, challenger)
                 no_challenge = False
@@ -173,7 +236,7 @@ class Game:
     def resolve_foreign_aid(self, current_player, action):
         no_block = True
         challenge_won = False
-        for player_blocker in random_other_players(current_player):
+        for player_blocker in self.random_other_players(current_player):
             payload = player_blocker.request_tries_to_block(action, current_player)
             card = payload['card']
             if payload['attempt_block']:
@@ -203,6 +266,6 @@ class Game:
                                 self.signal_lost_influence(player_blocker, influence)
                             break
                 break
-        if no_block || challenge_won:
+        if no_block or challenge_won:
             action.resolve_action(current_player)
 
