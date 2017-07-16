@@ -92,7 +92,6 @@ class Game:
         for player in self.players:
             if player.is_alive():
                 player.signal_action(current_player.id, action, None)
-                player.signal_action(current_player, action, None)
 
     def signal_blocking(self, blocked_player, action, blocker_player, card):
         for player in self.players:
@@ -119,7 +118,37 @@ class Game:
         pass
 
     def resolve_investigate(self, current_player, action):
-        pass
+        no_challenge = True
+        challenge_won = False
+        card = action.card
+        target = action.target
+        if target.request_challenge(action, current_player, card):
+            self.signal_challenge(current_player, card, target)
+            no_challenge = False
+            if current_player.has_card(card):
+                influence = target.lose_influence()
+                current_player.change_card(self.deck, card)
+                challenge_won = True
+                self.signal_lost_influence(target, influence)
+            else:
+                influence = current_player.lose_influence()
+                self.signal_lost_influence(current_player, influence)
+        else:
+            for spectator in self.random_other_players(current_player, target):
+                if spectator.request_challenge(action, current_player, card):
+                    self.signal_challenge(current_player, card, spectator)
+                    no_challenge = False
+                    if current_player.has_card(card):
+                        influence = spectator.lose_influence()
+                        current_player.change_card(self.deck, card)
+                        challenge_won = True
+                        self.signal_lost_influence(spectator, influence)
+                    else:
+                        influence = current_player.lose_influence()
+                        self.signal_lost_influence(current_player, influence)
+                    break
+        if no_challenge or challenge_won:
+            action.resolve_action(current_player, self.deck)
 
     def resolve_collect_taxes_and_exchange(self, current_player, action):
         no_challenge = True
