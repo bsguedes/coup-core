@@ -1,8 +1,6 @@
-
-import logger
-from constants import *
 import settings
-from playerstub import PlayerStub
+from constants import *
+from server.playerstub import PlayerStub
 
 players = []
 

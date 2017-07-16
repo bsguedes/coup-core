@@ -1,10 +1,12 @@
 import constants
 import settings
+from deck import Deck
 
 class Game:
     def __init__(self, players):
         self.players = players
-        self.deck = Deck(len(players))
+        ''' :type: list[PlayerStub] '''
+        self.deck = Deck(settings.deckrepetitions)
 
         self.give_cards_and_two_coins()
         self.signal_status()
@@ -12,10 +14,12 @@ class Game:
         player_index = players[0] #TODO randomize
 
         current_player = self.players[player_index]
+        ''' :type: playerstub.PlayerStub '''
+
         while not self.is_game_over():
             if current_player.is_alive():
 
-                action = current_player.play(current_player.Coins >= 10)
+                action = current_player.play(current_player.coins >= 10)
 
                 if action.is_valid(players, player_index):
                     self.signal_new_turn(player_index)
@@ -50,9 +54,8 @@ class Game:
             current_player = (current_player + 1) % len(players)
 
     def give_cards_and_two_coins(self):
-        for player in players:
-            player.setAlive(True)
-            player.send_start([self.deck.draw_card(), self.deck.draw_card()])
+        for player in self.players:
+            player.start([self.deck.draw_card(), self.deck.draw_card()])
 
     def get_global_status(self):
         player_list = []
@@ -66,29 +69,29 @@ class Game:
 
     def signal_status(self):
         for player in self.players:
-            if player.isAlive():
+            if player.is_alive():
                 player.signal_status(self.get_global_status())
 
     def is_game_over(self):
         count = 0
         for player in self.players:
-            if player.isAlive():
+            if player.is_alive():
                 count += 1
         return count == 1
 
     def signal_new_turn(self, player_index):
         for player in self.players:
-            if player.isAlive():
+            if player.is_alive():
                 player.signal_new_turn(self.players[player_index].name())
 
     def signal_targetted_action(self, current_player, action, action_target):
         for player in self.players:
-            if player.isAlive():
+            if player.is_alive():
                 player.signal_action(current_player.name(), action, action_target.name())
 
     def signal_player_action(self, current_player, action):
         for player in self.players:
-            if player.isAlive():
+            if player.is_alive():
                 player.signal_action(current_player.name(), action, None)
 
     def resolve_assassination_and_extortion(self, current_player, action):
