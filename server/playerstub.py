@@ -30,19 +30,19 @@ class PlayerStub:
         r = requests.post(self.uri + "/start/", data=json.dumps(payload))
         return self.__decode_response(r)
 
-    def play(self, must_coup):
+    def play(self, must_coup, players):
         logging.info('Player play: {}'.format(must_coup))
         payload = {'must_coup': must_coup}
         r = requests.post(self.uri + "/play/", data=json.dumps(payload))
-        return action.decode_action_from_dict(self.__decode_response(r))
+        return action.decode_action_from_dict(self.__decode_response(r), players)
 
     def request_tries_to_block(self, action, opponent):
-        payload = {'action': action, 'opponent': opponent.id}
+        payload = {'action': action.get_identifier(), 'opponent': opponent.id}
         r = requests.post(self.uri + "/tries_to_block/", data=json.dumps(payload))
         return self.__decode_response(r)
 
     def request_challenge(self, action, opponent, card):
-        payload = {'action': action, 'opponent': opponent.id, 'card': card}
+        payload = {'action': action.get_identifier(), 'opponent': opponent.id, 'card': card}
         r = requests.post(self.uri + "/challenge/", data=json.dumps(payload))
         return self.__decode_response(r)
 
@@ -60,8 +60,9 @@ class PlayerStub:
         r = requests.post(self.uri + "/inquisitor/show_card_to_inquisitor/", data=payload)
         return self.__decode_response(r)
 
-    def request_inquisitor_choose_card_to_return(self):
-        r = requests.post(self.uri + "/inquisitor/show_card_to_inquisitor/", data=None)
+    def request_inquisitor_choose_card_to_return(self, card):
+        payload = {'card': card}
+        r = requests.post(self.uri + "/inquisitor/choose_card_to_return/", data=payload)
         return self.__decode_response(r)
 
     def signal_status(self, global_status):
@@ -76,7 +77,7 @@ class PlayerStub:
     def signal_lost_influence(self, opponent, card):
         pass
 
-    def signal_challenge(self, acting_opponent, challenged_opponent):
+    def signal_challenge(self, acting_opponent, card, challenged_opponent):
         pass
 
     def signal_action(self, opponent, action, targetted_opponent):
@@ -121,7 +122,10 @@ class PlayerStub:
     #private methods
 
     def remove_card(self, card):
-        self.cards.remove(card)
+        try:
+            self.cards.remove(card)
+        except ValueError:
+            pass  # do nothing!
 
     def add_card(self, card):
         self.cards.append(card)
