@@ -77,13 +77,19 @@ class Game:
         return count == 1
 
     def signal_new_turn(self, player_index):
-        pass
+        for player in self.players:
+            if player.isAlive():
+                player.signal_new_turn(self.players[player_index].name())
 
     def signal_targetted_action(self, current_player, action, action_target):
-        pass
+        for player in self.players:
+            if player.isAlive():
+                player.signal_action(current_player.name(), action, action_target.name())
 
     def signal_player_action(self, current_player, action):
-        pass
+        for player in self.players:
+            if player.isAlive():
+                player.signal_action(current_player.name(), action, None)
 
     def resolve_assassination_and_extortion(self, current_player, action):
         pass
