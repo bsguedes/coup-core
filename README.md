@@ -2,7 +2,7 @@
 Coup Core using Django/Python
 
 ## Player API
-
+'''
 player: a player string IP (e.g. "192.168.0.10")
 card: one of five cards ("duke", "contessa", "assassin", "captain", "inquisitor")
 action: one of eight actions ("income", "foreign_aid", "collect_taxes", "assassinate", "extortion", "investigate", "exchange", "coup")
@@ -181,6 +181,6 @@ OR
 	"action": action<targetted>,
 	"player_targetted": player
 }
-
+''' 
 
 
