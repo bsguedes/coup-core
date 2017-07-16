@@ -69,6 +69,7 @@ class Game:
     def signal_status(self):
         for player in self.players:
             if player.is_alive():
+                print "player %s coins %i cards [%s]" % (player.id, player.coins, ",".join(player.cards))
                 player.signal_status(self.get_global_status())
 
     def is_game_over(self):
