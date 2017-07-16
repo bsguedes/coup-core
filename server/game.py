@@ -1,6 +1,7 @@
 import constants
 import settings
 from deck import Deck
+import random
 
 class Game:
     def __init__(self, players):
@@ -11,7 +12,7 @@ class Game:
         self.give_cards_and_two_coins()
         self.signal_status()
 
-        player_index = players[0] #TODO randomize
+        player_index = random.randint(0, len(players) - 1)
 
         current_player = self.players[player_index]
         ''' :type: playerstub.PlayerStub '''
