@@ -13,7 +13,7 @@ class Deck:
 
     def shuffle(self):
         for i in range(1000):
-            self.swap(random.randint(len(self.cards)), random.randint(len(self.cards)))
+            self.swap(random.randint(0, len(self.cards) - 1), random.randint(0, len(self.cards) - 1))
 
     def swap(self, i, j):
         c = self.cards[i]
