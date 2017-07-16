@@ -127,3 +127,5 @@ class PlayerStub:
         card = deck.draw_card()
         self.add_card(card)
 
+    def has_card(self, card):
+        return card in self.cards

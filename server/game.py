@@ -94,6 +94,16 @@ class Game:
             if player.is_alive():
                 player.signal_action(current_player, action, None)
 
+    def signal_blocking(self, blocked_player, action, blocker_player, card):
+        for player in self.players:
+            if player.is_alive():
+                player.signal_blocking(blocker_player, blocked_player, action, card)
+
+    def signal_challenge(self, challenged_player, card, challenger_player):
+        for player in self.players:
+            if player.is_alive():
+                player.signal_challenge(self, challenger_player, challenged_player)
+
     def resolve_assassination_and_extortion(self, current_player, action):
         pass
 
@@ -108,14 +118,15 @@ class Game:
         challenge_won = False
         for player_blocker in random_other_players(current_player):
             payload = player_blocker.request_tries_to_block(action, current_player)
+            card = payload['card']
             if payload['attempt_block']:
-                self.signal_blocking(current_player, action, player_blocker, payload['card'])
+                self.signal_blocking(current_player, action, player_blocker, card)
                 no_block = False
-                if current_player.request_challenge(action, player_blocker, payload['card']):
-                    self.signal_challenge(player_blocker, payload['card'], current_player)
-                    if player_blocker.has_card(payload['card']):
+                if current_player.request_challenge(action, player_blocker, card):
+                    self.signal_challenge(player_blocker, card, current_player)
+                    if player_blocker.has_card(card):
                         influence = current_player.lose_influence()
-                        player_blocker.change_card(self.deck, payload['card'])
+                        player_blocker.change_card(self.deck, card)
                         self.signal_lost_influence(current_player, influence)
                     else:
                         influence = player_blocker.lose_influence()
@@ -123,11 +134,11 @@ class Game:
                         self.signal_lost_influence(player_blocker, influence)
                 else:
                     for spectator in random_other_players(current_player, player_blocker):
-                        if spectator.request_challenge(player_blocker, payload['card']):
-                            self.signal_challenge(player_blocker, payload['card'], spectator)
-                            if player_blocker.has_card(payload['card']):
+                        if spectator.request_challenge(player_blocker, card):
+                            self.signal_challenge(player_blocker, card, spectator)
+                            if player_blocker.has_card(card):
                                 influence = spectator.lose_influence()
-                                player_blocker.change_card(self.deck, payload['card'])
+                                player_blocker.change_card(self.deck, card)
                                 self.signal_lost_influence(spectator, influence)
                             else:
                                 influence = player_blocker.lose_influence()
@@ -137,3 +148,4 @@ class Game:
                 break
         if no_block || challenge_won:
             action.resolve_action(current_player)
+
