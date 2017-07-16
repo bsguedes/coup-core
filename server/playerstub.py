@@ -8,7 +8,7 @@ class PlayerStub:
     def __init__(self, playeruri):
         self.uri = playeruri
 
-        self.cards = list()
+        self.cards = []
         self.coins = 0
         self.id = self.uri
 
@@ -23,6 +23,7 @@ class PlayerStub:
 
     def start(self, cards):
         logging.info('Player start: {}'.format(cards))
+        self.cards = list(cards)
         opponents = list(settings.players_uris)
         opponents.remove(self.id)
         payload = {'cards': cards, 'players': opponents, 'coins': settings.starting_coins}
