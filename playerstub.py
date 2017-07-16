@@ -6,42 +6,56 @@ import logging
 class PlayerStub:
     def __init__(self, playeruri):
         self.uri = playeruri
+        self.id = self.uri
+
+    def __decode_response(self, response):
+        if response.status_code != 200:
+            logging.error("Error receiving response")
+        logging.info(response.text)
+        try:
+            return json.loads(response.text)
+        except:
+            return response.text
 
     def send_start(self, cards):
         opponents = list(settings.players_uris)
-        opponents.remove(self.uri)
-
+        opponents.remove(self.id)
         payload = {'cards': cards, 'players': opponents, 'coins': settings.starting_coins}
-
         r = requests.post(self.uri + "/start/", data=json.dumps(payload))
-        if r.status_code != 200:
-            logging.error("Error sending start")
-        logging.info(r.text)
-        try:
-            return json.loads(r.text)
-        except:
-            return r.text
+        return self.__decode_response(r)
 
     def request_play(self, must_coup):
-        pass
+        payload = {'must_coup': must_coup}
+        r = requests.post(self.uri + "/play/", data=json.dumps(payload))
+        return self.__decode_response(r)
 
     def request_tries_to_block(self, action, opponent):
-        pass
+        payload = {'action': action, 'opponent': opponent.id}
+        r = requests.post(self.uri + "/tries_to_block/", data=json.dumps(payload))
+        return self.__decode_response(r)
 
     def request_challenge(self, action, opponent, card):
-        pass
+        payload = {'action': action, 'opponent': opponent.id, 'card': card}
+        r = requests.post(self.uri + "/challenge/", data=json.dumps(payload))
+        return self.__decode_response(r)
 
     def request_lose_influence(self):
-        pass
+        r = requests.post(self.uri + "/lose_influence/", data=None)
+        return self.__decode_response(r)
 
     def request_give_card_to_inquisitor(self, opponent):
-        pass
+        payload = {'opponent': opponent.id}
+        r = requests.post(self.uri + "/inquisitor/give_card_to_inquisitor/", data=payload)
+        return self.__decode_response(r)
 
     def request_show_card_to_inquisitor(self, opponent, card):
-        pass
+        payload = {'opponent': opponent.id, 'card': card}
+        r = requests.post(self.uri + "/inquisitor/show_card_to_inquisitor/", data=payload)
+        return self.__decode_response(r)
 
     def request_inquisitor_choose_card_to_return(self):
-        pass
+        r = requests.post(self.uri + "/inquisitor/show_card_to_inquisitor/", data=None)
+        return self.__decode_response(r)
 
     def signal_status(self, global_status):
         pass
