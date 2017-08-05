@@ -32,37 +32,37 @@ class PlayerStub:
 
     def play(self, must_coup, players):
         logging.info('Player play: {}'.format(must_coup))
-        headers = {'Must-Coup': must_coup}
-        r = requests.post(self.uri + "/play/", headers=headers)
+        headers = {'Must-Coup': 'true' if must_coup else 'false'}
+        r = requests.get(self.uri + "/play/", headers=headers)
         return Action.decode_action_from_dict(self.__decode_response(r), players)
 
     def request_tries_to_block(self, action, opponent):
         headers = {'Action': action.get_identifier(), 'Player': opponent.id}
-        r = requests.post(self.uri + "/tries_to_block/", headers=headers)
+        r = requests.get(self.uri + "/tries_to_block/", headers=headers)
         return self.__decode_response(r)
 
     def request_challenge(self, action, opponent, card):
         headers = {'Action': action.get_identifier(), 'Player': opponent.id, 'Card': card}
-        r = requests.post(self.uri + "/challenge/", headers=headers)
+        r = requests.get(self.uri + "/challenge/", headers=headers)
         return self.__decode_response(r)
 
     def request_lose_influence(self):
-        r = requests.post(self.uri + "/lose_influence/")
+        r = requests.get(self.uri + "/lose_influence/")
         return self.__decode_response(r)
 
     def request_give_card_to_inquisitor(self, opponent):
         headers = {'Player': opponent.id}
-        r = requests.post(self.uri + "/inquisitor/give_card_to_inquisitor/", headers=headers)
+        r = requests.get(self.uri + "/inquisitor/give_card_to_inquisitor/", headers=headers)
         return self.__decode_response(r)
 
     def request_show_card_to_inquisitor(self, opponent, card):
         headers = {'Player': opponent.id, 'Card': card}
-        r = requests.post(self.uri + "/inquisitor/show_card_to_inquisitor/", headers=headers)
+        r = requests.get(self.uri + "/inquisitor/show_card_to_inquisitor/", headers=headers)
         return self.__decode_response(r)
 
     def request_inquisitor_choose_card_to_return(self, card):
         headers = {'Card': card}
-        r = requests.post(self.uri + "/inquisitor/choose_card_to_return/", headers=headers)
+        r = requests.get(self.uri + "/inquisitor/choose_card_to_return/", headers=headers)
         return self.__decode_response(r)
 
     def signal_status(self, global_status):
