@@ -26,7 +26,7 @@ class PlayerStub:
         logging.info('Player start: {}'.format(cards))
         self.cards = list(cards)
         players = list(settings.players_uris)
-        payload = {'cards': cards, 'players': players, 'coins': settings.starting_coins}
+        payload = {'you': self.id, 'cards': cards, 'players': players, 'coins': settings.starting_coins}
         r = requests.post(self.uri + "/start/", data=json.dumps(payload))
         return self.__decode_response(r)
 
