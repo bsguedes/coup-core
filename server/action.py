@@ -16,7 +16,7 @@ class Action:
         pass
 
     def is_valid(self, players, player_index):
-        #TODO validation
+        # TODO validation
         return True
 
     @staticmethod
@@ -49,7 +49,7 @@ class CoupDEtat(Action):
 
     def resolve_action(self, current_player=None, deck=None):
         current_player.delta_coins(-7)
-        self.target.lose_influence()
+        return self.target.lose_influence()
 
 
 class ForeignAid(Action):
@@ -97,8 +97,8 @@ class Investigate(Action):
         return constants.INVESTIGATE
 
     def resolve_action(self, current_player=None, deck=None):
-        target_card = self.target.give_card_to_inquisitor(current_player)
-        if current_player.should_target_change_card(self.target, target_card):
+        target_card = self.target.request_give_card_to_inquisitor(current_player)
+        if current_player.request_show_card_to_inquisitor(self.target, target_card):
             self.target.send_card_back_to_deck_and_draw_card(deck, target_card)
 
 
@@ -106,11 +106,13 @@ class Exchange(Action):
     def __init__(self):
         Action.__init__(self)
         self.card = constants.EXCHANGE
+
     def get_identifier(self):
         return constants.EXCHANGE
+
     def resolve_action(self, current_player=None, deck=None):
         new_card = deck.draw_card()
-        removed_card = current_player.choose_one_to_remove(new_card)
+        removed_card = current_player.request_inquisitor_choose_card_to_return(new_card)
         current_player.change_cards(deck, new_card, removed_card)
 
 
@@ -120,11 +122,13 @@ class Assassinate(Action):
         self.target = target
         self.card = constants.ASSASSIN
         self.blockers = [constants.CONTESSA]
+
     def get_identifier(self):
         return constants.ASSASSINATE
+
     def resolve_action(self, current_player=None, deck=None):
         current_player.delta_coins(-3)
-        self.target.lose_influence()
+        return self.target.lose_influence()
 
 
 class Extortion(Action):
@@ -133,8 +137,10 @@ class Extortion(Action):
         self.target = target
         self.card = constants.CAPTAIN
         self.blockers = [constants.CAPTAIN, constants.INQUISITOR]
+
     def get_identifier(self):
         return constants.EXTORTION
+
     def resolve_action(self, current_player=None, deck=None):
         if self.target.get_coins() >= 2:
             current_player.delta_coins(2)

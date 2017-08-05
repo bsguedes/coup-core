@@ -38,6 +38,9 @@ class Game:
                         self.resolve_foreign_aid(current_player, action)
                     elif isinstance(action, Investigate):
                         self.resolve_investigate(current_player, action)
+                    elif isinstance(action, CoupDEtat):
+                        influence = action.resolve_action(current_player)
+                        self.signal_lost_influence(action.target, influence)
                     else:
                         action.resolve_action(current_player)
 
@@ -54,6 +57,7 @@ class Game:
     def give_cards_and_two_coins(self):
         for player in self.players:
             player.start([self.deck.draw_card(), self.deck.draw_card()])
+            player.delta_coins(2)
 
     def get_global_status(self):
         player_list = []
@@ -68,7 +72,7 @@ class Game:
     def signal_status(self):
         for player in self.players:
             if player.is_alive():
-                print("player %s coins %i cards [%s]" % (player.id, player.coins, ",".join(player.cards)))
+                print(str(player))
                 player.signal_status(self.get_global_status())
 
     def is_game_over(self):
@@ -79,8 +83,9 @@ class Game:
         return count <= 1
 
     def signal_lost_influence(self, player, card):
-        for player in self.players:
-            if player.is_alive():
+        print(str(player) + ' lost ' + card)
+        for p in self.players:
+            if p.is_alive():
                 player.signal_lost_influence(player.id, card)
 
     def signal_new_turn(self, player_index):
@@ -113,7 +118,7 @@ class Game:
         other_players.remove(player1)
         if player2:
             other_players.remove(player2)
-        #TODO retirei shuffle pois nao funcionava (sempre retornava none)
+        # TODO retirei shuffle pois nao funcionava (sempre retornava none)
         return other_players
 
     def resolve_assassination_and_extortion(self, current_player, action):
@@ -178,9 +183,9 @@ class Game:
                                 self.signal_lost_influence(target, influence)
                             break
         if (no_block and no_challenge) or challenge_won:
-            action.resolve_action(current_player)
-
-
+            influence = action.resolve_action(current_player)
+            if influence:
+                self.signal_lost_influence(target, influence)
 
     def resolve_investigate(self, current_player, action):
         no_challenge = True
