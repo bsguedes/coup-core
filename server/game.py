@@ -76,7 +76,7 @@ class Game:
         for player in self.players:
             if player.is_alive():
                 count += 1
-        return count == 1
+        return count > 1
 
     def signal_lost_influence(self, player, card):
         for player in self.players:
