@@ -1,6 +1,7 @@
 import constants
 import random
 
+
 class Deck:
     def __init__(self, repetitions):
         self.cards = list()

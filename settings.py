@@ -1,3 +1,3 @@
-players_uris = ['http://192.168.0.66:8000', 'http://192.168.0.66:8001']
+players_uris = ['http://127.0.0.1:8002', 'http://127.0.0.1:8001']
 starting_coins = 2
 deckrepetitions = 3

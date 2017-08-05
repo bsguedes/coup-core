@@ -19,6 +19,25 @@ class Action:
         #TODO validation
         return True
 
+    @staticmethod
+    def decode_action_from_dict(dict, players):
+        if dict['action'] == constants.INCOME:
+            return Income()
+        elif dict['action'] == constants.FOREIGN_AID:
+            return ForeignAid()
+        elif dict['action'] == constants.COLLECT_TAXES:
+            return CollectTaxes()
+        elif dict['action'] == constants.ASSASSINATE:
+            return Assassinate(get_player_by_name(players, dict['target']))
+        elif dict['action'] == constants.EXTORTION:
+            return Extortion(get_player_by_name(players, dict['target']))
+        elif dict['action'] == constants.INVESTIGATE:
+            return Investigate(get_player_by_name(players, dict['target']))
+        elif dict['action'] == constants.EXCHANGE:
+            return Exchange()
+        elif dict['action'] == constants.COUP:
+            return CoupDEtat(get_player_by_name(players, dict['target']))
+
 
 class CoupDEtat(Action):
     def __init__(self, target):
@@ -131,20 +150,4 @@ def get_player_by_name(players, player_name):
             return player
     return None
 
-def decode_action_from_dict(dict, players):
-    if dict['action'] == constants.INCOME:
-        return Income()
-    elif dict['action'] == constants.FOREIGN_AID:
-        return ForeignAid()
-    elif dict['action'] == constants.COLLECT_TAXES:
-        return CollectTaxes()
-    elif dict['action'] == constants.ASSASSINATE:
-        return Assassinate(get_player_by_name(players, dict['target']))
-    elif dict['action'] == constants.EXTORTION:
-        return Extortion(get_player_by_name(players, dict['target']))
-    elif dict['action'] == constants.INVESTIGATE:
-        return Investigate(get_player_by_name(players, dict['target']))
-    elif dict['action'] == constants.EXCHANGE:
-        return Exchange()
-    elif dict['action'] == constants.COUP:
-        return CoupDEtat(get_player_by_name(players, dict['target']))
+

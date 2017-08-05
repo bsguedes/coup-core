@@ -2,7 +2,8 @@ import settings
 import requests
 import json
 import logging
-import action
+from server.action import Action
+
 
 class PlayerStub:
     def __init__(self, playeruri):
@@ -24,26 +25,25 @@ class PlayerStub:
     def start(self, cards):
         logging.info('Player start: {}'.format(cards))
         self.cards = list(cards)
-        opponents = list(settings.players_uris)
-        opponents.remove(self.id)
-        payload = {'cards': cards, 'players': opponents, 'coins': settings.starting_coins}
+        players = list(settings.players_uris)
+        payload = {'cards': cards, 'players': players, 'coins': settings.starting_coins}
         r = requests.post(self.uri + "/start/", data=json.dumps(payload))
         return self.__decode_response(r)
 
     def play(self, must_coup, players):
         logging.info('Player play: {}'.format(must_coup))
-        payload = {'must_coup': must_coup}
-        r = requests.post(self.uri + "/play/", data=json.dumps(payload))
-        return action.decode_action_from_dict(self.__decode_response(r), players)
+        headers = {'Must-Coup': must_coup}
+        r = requests.post(self.uri + "/play/", headers=headers)
+        return Action.decode_action_from_dict(self.__decode_response(r), players)
 
     def request_tries_to_block(self, action, opponent):
-        payload = {'action': action.get_identifier(), 'opponent': opponent.id}
-        r = requests.post(self.uri + "/tries_to_block/", data=json.dumps(payload))
+        headers = {'Action': action.get_identifier(), 'Player': opponent.id}
+        r = requests.post(self.uri + "/tries_to_block/", headers=headers)
         return self.__decode_response(r)
 
     def request_challenge(self, action, opponent, card):
-        payload = {'action': action.get_identifier(), 'opponent': opponent.id, 'card': card}
-        r = requests.post(self.uri + "/challenge/", data=json.dumps(payload))
+        headers = {'Action': action.get_identifier(), 'Player': opponent.id, 'Card': card}
+        r = requests.post(self.uri + "/challenge/", headers=headers)
         return self.__decode_response(r)
 
     def request_lose_influence(self):

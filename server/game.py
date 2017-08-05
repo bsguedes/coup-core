@@ -1,7 +1,7 @@
 import settings
-from deck import Deck
-from action import *
 import random
+from server.deck import Deck
+from server.action import *
 
 class Game:
     def __init__(self, players):
@@ -68,7 +68,7 @@ class Game:
     def signal_status(self):
         for player in self.players:
             if player.is_alive():
-                print "player %s coins %i cards [%s]" % (player.id, player.coins, ",".join(player.cards))
+                print("player %s coins %i cards [%s]" % (player.id, player.coins, ",".join(player.cards)))
                 player.signal_status(self.get_global_status())
 
     def is_game_over(self):
