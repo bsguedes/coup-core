@@ -47,22 +47,22 @@ class PlayerStub:
         return self.__decode_response(r)
 
     def request_lose_influence(self):
-        r = requests.post(self.uri + "/lose_influence/", data=None)
+        r = requests.post(self.uri + "/lose_influence/")
         return self.__decode_response(r)
 
     def request_give_card_to_inquisitor(self, opponent):
-        payload = {'opponent': opponent.id}
-        r = requests.post(self.uri + "/inquisitor/give_card_to_inquisitor/", data=payload)
+        headers = {'Player': opponent.id}
+        r = requests.post(self.uri + "/inquisitor/give_card_to_inquisitor/", headers=headers)
         return self.__decode_response(r)
 
     def request_show_card_to_inquisitor(self, opponent, card):
-        payload = {'opponent': opponent.id, 'card': card}
-        r = requests.post(self.uri + "/inquisitor/show_card_to_inquisitor/", data=payload)
+        headers = {'Player': opponent.id, 'Card': card}
+        r = requests.post(self.uri + "/inquisitor/show_card_to_inquisitor/", headers=headers)
         return self.__decode_response(r)
 
     def request_inquisitor_choose_card_to_return(self, card):
-        payload = {'card': card}
-        r = requests.post(self.uri + "/inquisitor/choose_card_to_return/", data=payload)
+        headers = {'Card': card}
+        r = requests.post(self.uri + "/inquisitor/choose_card_to_return/", headers=headers)
         return self.__decode_response(r)
 
     def signal_status(self, global_status):
