@@ -28,6 +28,7 @@ class PlayerStub:
     def start(self, cards):
         logging.info('Player start: {}'.format(cards))
         self.cards = list(cards)
+        self.coins = 0
         players = list(settings.players_uris)
         payload = {'you': self.id, 'cards': cards, 'players': players, 'coins': settings.starting_coins}
         r = requests.post(self.uri + "/start/", data=json.dumps(payload))
@@ -61,6 +62,11 @@ class PlayerStub:
         r = requests.get(self.uri + "/inquisitor/give_card_to_inquisitor/", headers=headers)
         payload = self.__decode_response(r)
         return payload['card']
+
+    def request_card_returned_from_investigation(self, opponent, same_card, card):
+        payload = {'player': opponent.id, 'same_card': same_card, 'card': card}
+        r = requests.post(self.uri + "/inquisitor/card_returned_from_investigation/", data=json.dumps(payload))
+        return self.__decode_response(r)
 
     def request_show_card_to_inquisitor(self, opponent, card):
         headers = {'Player': opponent.id, 'Card': card}
@@ -104,9 +110,10 @@ class PlayerStub:
         return card_to_lose
 
     def send_card_back_to_deck_and_draw_card(self, deck, target_card):
-        self.remove_card(target_card)
-        self.take_card_from_deck(deck)
         deck.return_card(target_card)
+        self.remove_card(target_card)
+        new_card = self.take_card_from_deck(deck)
+        return new_card
 
     def change_card(self, deck, card_to_change):
         self.remove_card(card_to_change)
@@ -114,8 +121,8 @@ class PlayerStub:
         self.add_card(deck.draw_card())
 
     def change_cards(self, deck, new_card, removed_card):
-        self.remove_card(removed_card)
         self.add_card(new_card)
+        self.remove_card(removed_card)
         deck.return_card(removed_card)
 
     def give_cards(self, card1, card2):
@@ -140,6 +147,7 @@ class PlayerStub:
     def take_card_from_deck(self, deck):
         card = deck.draw_card()
         self.add_card(card)
+        return card
 
     def has_card(self, card):
         return card in self.cards

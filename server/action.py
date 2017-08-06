@@ -91,7 +91,7 @@ class Investigate(Action):
     def __init__(self, target):
         Action.__init__(self)
         self.target = target
-        self.card = constants.INVESTIGATE
+        self.card = constants.INQUISITOR
 
     def get_identifier(self):
         return constants.INVESTIGATE
@@ -99,13 +99,16 @@ class Investigate(Action):
     def resolve_action(self, current_player=None, deck=None):
         target_card = self.target.request_give_card_to_inquisitor(current_player)
         if current_player.request_show_card_to_inquisitor(self.target, target_card):
-            self.target.send_card_back_to_deck_and_draw_card(deck, target_card)
+            new_card = self.target.send_card_back_to_deck_and_draw_card(deck, target_card)
+            self.target.request_card_returned_from_investigation(current_player, False, new_card)
+        else:
+            self.target.request_card_returned_from_investigation(current_player, True, target_card)
 
 
 class Exchange(Action):
     def __init__(self):
         Action.__init__(self)
-        self.card = constants.EXCHANGE
+        self.card = constants.INQUISITOR
 
     def get_identifier(self):
         return constants.EXCHANGE

@@ -5,54 +5,60 @@ from server.action import *
 
 class Game:
     def __init__(self, players):
+        self.scores = {}
         self.players = players
-        ''' :type: list[PlayerStub] '''
-        self.deck = Deck(settings.deckrepetitions)
 
-        self.give_cards_and_two_coins()
-        self.signal_status()
+        for player in self.players:
+            self.scores[player.id] = 0
 
-        player_index = random.randint(0, len(players) - 1)
+        for i in range(0,100):
+            ''' :type: list[PlayerStub] '''
+            self.deck = Deck(settings.deckrepetitions)
 
-        current_player = self.players[player_index]
-        ''' :type: playerstub.PlayerStub '''
+            self.give_cards_and_two_coins()
+            self.signal_status()
 
-        while not self.is_game_over():
-            if current_player.is_alive():
+            player_index = random.randint(0, len(players) - 1)
 
-                action = current_player.play(current_player.coins >= 10, players)
-
-                if action.is_valid(players, player_index):
-                    self.signal_new_turn(player_index)
-                    if action.target:
-                        self.signal_targetted_action(current_player, action, action.target)
-                    else:
-                        self.signal_player_action(current_player, action)
-
-                    # resolve
-                    if isinstance(action, Assassinate) or isinstance(action, Extortion):
-                        self.resolve_assassination_and_extortion(current_player, action)
-                    elif isinstance(action, CollectTaxes) or isinstance(action, Exchange):
-                        self.resolve_collect_taxes_and_exchange(current_player, action)
-                    elif isinstance(action, ForeignAid):
-                        self.resolve_foreign_aid(current_player, action)
-                    elif isinstance(action, Investigate):
-                        self.resolve_investigate(current_player, action)
-                    elif isinstance(action, CoupDEtat):
-                        influence = action.resolve_action(current_player)
-                        self.signal_lost_influence(action.target, influence)
-                    else:
-                        action.resolve_action(current_player)
-
-                    self.signal_status()
-
-                else:
-                    # TODO invalid action
-                    pass
-            else:
-                pass
-            player_index = (player_index + 1) % len(players)
             current_player = self.players[player_index]
+            ''' :type: playerstub.PlayerStub '''
+
+            while not self.is_game_over():
+                if current_player.is_alive():
+                    action = current_player.play(current_player.coins >= 10, players)
+                    if action.is_valid(players, player_index):
+                        self.signal_new_turn(player_index)
+                        if action.target:
+                            self.signal_targetted_action(current_player, action, action.target)
+                        else:
+                            self.signal_player_action(current_player, action)
+                        # resolve
+                        if isinstance(action, Assassinate) or isinstance(action, Extortion):
+                            self.resolve_assassination_and_extortion(current_player, action)
+                        elif isinstance(action, CollectTaxes) or isinstance(action, Exchange):
+                            self.resolve_collect_taxes_and_exchange(current_player, action)
+                        elif isinstance(action, ForeignAid):
+                            self.resolve_foreign_aid(current_player, action)
+                        elif isinstance(action, Investigate):
+                            self.resolve_investigate(current_player, action)
+                        elif isinstance(action, CoupDEtat):
+                            influence = action.resolve_action(current_player)
+                            self.signal_lost_influence(action.target, influence)
+                        else:
+                            action.resolve_action(current_player)
+                        self.signal_status()
+                    else:
+                        # TODO invalid action
+                        pass
+                else:
+                    pass
+                player_index = (player_index + 1) % len(players)
+                current_player = self.players[player_index]
+            for winner in self.players:
+                if len(winner.cards) > 0:
+                    self.scores[winner.id] += 1
+                    break
+        print(str(self.scores))
 
     def give_cards_and_two_coins(self):
         for player in self.players:
