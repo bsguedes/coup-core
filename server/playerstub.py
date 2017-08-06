@@ -10,6 +10,7 @@ class PlayerStub:
         self.uri = playeruri
 
         self.cards = []
+        self.dead_cards = []
         self.coins = 0
         self.id = self.uri
 
@@ -29,6 +30,7 @@ class PlayerStub:
         logging.info('Player start: {}'.format(cards))
         self.cards = list(cards)
         self.coins = 0
+        self.dead_cards = []
         players = list(settings.players_uris)
         payload = {'you': self.id, 'cards': cards, 'players': players, 'coins': settings.starting_coins}
         r = requests.post(self.uri + "/start/", data=json.dumps(payload))
@@ -66,6 +68,11 @@ class PlayerStub:
     def request_card_returned_from_investigation(self, opponent, same_card, card):
         payload = {'player': opponent.id, 'same_card': same_card, 'card': card}
         r = requests.post(self.uri + "/inquisitor/card_returned_from_investigation/", data=json.dumps(payload))
+        return self.__decode_response(r)
+
+    def request_send_new_card_after_challenge(self, old_card, new_card):
+        payload = {'old_card': old_card, 'new_card': new_card}
+        r = requests.post(self.uri + "/new_card_from_challenge/", data=json.dumps(payload))
         return self.__decode_response(r)
 
     def request_show_card_to_inquisitor(self, opponent, card):
@@ -106,19 +113,22 @@ class PlayerStub:
     def lose_influence(self):
         #TODO check if player is not cheating
         card_to_lose = self.request_lose_influence()
+        self.dead_cards.append(card_to_lose)
         self.remove_card(card_to_lose)
         return card_to_lose
 
-    def send_card_back_to_deck_and_draw_card(self, deck, target_card):
+    def draw_card_then_send_card_to_deck(self, deck, target_card):
+        new_card = self.take_card_from_deck(deck)
         deck.return_card(target_card)
         self.remove_card(target_card)
-        new_card = self.take_card_from_deck(deck)
         return new_card
 
     def change_card(self, deck, card_to_change):
         self.remove_card(card_to_change)
         deck.return_card(card_to_change)
-        self.add_card(deck.draw_card())
+        new_card = deck.draw_card()
+        self.add_card(new_card)
+        return new_card
 
     def change_cards(self, deck, new_card, removed_card):
         self.add_card(new_card)

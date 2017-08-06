@@ -2,6 +2,7 @@ import settings
 import random
 from server.deck import Deck
 from server.action import *
+from server.validation import Validation
 
 class Game:
     def __init__(self, players):
@@ -11,7 +12,7 @@ class Game:
         for player in self.players:
             self.scores[player.id] = 0
 
-        for i in range(0,100):
+        for i in range(0, 100):
             ''' :type: list[PlayerStub] '''
             self.deck = Deck(settings.deckrepetitions)
 
@@ -25,6 +26,10 @@ class Game:
 
             while not self.is_game_over():
                 if current_player.is_alive():
+                    if not Validation.check_table_correctness(self.players, self.deck):
+                        print('Invalid Status!')
+                        print(str([str(p) for p in self.players]))
+                        raise ValueError()
                     action = current_player.play(current_player.coins >= 10, players)
                     if action.is_valid(players, player_index):
                         self.signal_new_turn(player_index)
@@ -58,7 +63,7 @@ class Game:
                 if len(winner.cards) > 0:
                     self.scores[winner.id] += 1
                     break
-        print(str(self.scores))
+        print('SCORES: ' + str(self.scores))
 
     def give_cards_and_two_coins(self):
         for player in self.players:
@@ -76,6 +81,7 @@ class Game:
         return {"players": player_list}
 
     def signal_status(self):
+        print('status')
         for player in self.players:
             if player.is_alive():
                 print(str(player))
@@ -89,32 +95,38 @@ class Game:
         return count <= 1
 
     def signal_lost_influence(self, player, card):
-        print(str(player) + ' lost ' + card)
+        print(player.id + ' lost ' + card)
         for p in self.players:
             if p.is_alive():
                 player.signal_lost_influence(player.id, card)
 
     def signal_new_turn(self, player_index):
+        print('player ' + str(player_index) + ' is playing.')
         for player in self.players:
             if player.is_alive():
                 player.signal_new_turn(self.players[player_index].id)
 
     def signal_targetted_action(self, current_player, action, action_target):
+        print(current_player.id + ' is targeting ' + action_target.id + ' with ' + action.get_identifier())
         for player in self.players:
             if player.is_alive():
                 player.signal_action(current_player.id, action, action_target)
 
     def signal_player_action(self, current_player, action):
+        print(current_player.id + ' is doing ' + action.get_identifier())
         for player in self.players:
             if player.is_alive():
                 player.signal_action(current_player.id, action, None)
 
     def signal_blocking(self, blocked_player, action, blocker_player, card):
+        print('Player %s block %s\'s %s with %s.' %
+              (blocker_player.id, blocked_player.id, action.get_identifier(), card))
         for player in self.players:
             if player.is_alive():
                 player.signal_blocking(blocker_player, blocked_player, action, card)
 
     def signal_challenge(self, challenged_player, card, challenger_player):
+        print('Player %s challenges %s\'s %s' % (challenger_player.id, challenged_player.id, card))
         for player in self.players:
             if player.is_alive():
                 player.signal_challenge(challenger_player, card, challenged_player)
@@ -139,7 +151,8 @@ class Game:
             no_challenge = False
             if current_player.has_card(card):
                 influence = target.lose_influence()
-                current_player.change_card(self.deck, card)
+                new_card = current_player.change_card(self.deck, card)
+                current_player.request_send_new_card_after_challenge(card, new_card)
                 challenge_won = True
                 self.signal_lost_influence(target, influence)
             else:
@@ -152,7 +165,8 @@ class Game:
                     no_challenge = False
                     if current_player.has_card(card):
                         influence = spectator.lose_influence()
-                        current_player.change_card(self.deck, card)
+                        new_card = current_player.change_card(self.deck, card)
+                        current_player.request_send_new_card_after_challenge(card, new_card)
                         challenge_won = True
                         self.signal_lost_influence(spectator, influence)
                     else:
@@ -169,7 +183,8 @@ class Game:
                     self.signal_challenge(target, card, current_player)
                     if target.has_card(card):
                         influence = current_player.lose_influence()
-                        target.change_card(self.deck, card)
+                        new_card = target.change_card(self.deck, card)
+                        target.request_send_new_card_after_challenge(card, new_card)
                         self.signal_lost_influence(current_player, influence)
                     else:
                         influence = target.lose_influence()
@@ -181,7 +196,8 @@ class Game:
                             self.signal_challenge(target, card, spectator)
                             if target.has_card(card):
                                 influence = spectator.lose_influence()
-                                target.change_card(self.deck, card)
+                                new_card = target.change_card(self.deck, card)
+                                target.request_send_new_card_after_challenge(card, new_card)
                                 self.signal_lost_influence(spectator, influence)
                             else:
                                 influence = target.lose_influence()
@@ -203,7 +219,8 @@ class Game:
             no_challenge = False
             if current_player.has_card(card):
                 influence = target.lose_influence()
-                current_player.change_card(self.deck, card)
+                new_card = current_player.change_card(self.deck, card)
+                current_player.request_send_new_card_after_challenge(card, new_card)
                 challenge_won = True
                 self.signal_lost_influence(target, influence)
             else:
@@ -216,7 +233,8 @@ class Game:
                     no_challenge = False
                     if current_player.has_card(card):
                         influence = spectator.lose_influence()
-                        current_player.change_card(self.deck, card)
+                        new_card = current_player.change_card(self.deck, card)
+                        current_player.request_send_new_card_after_challenge(card, new_card)
                         challenge_won = True
                         self.signal_lost_influence(spectator, influence)
                     else:
@@ -236,7 +254,8 @@ class Game:
                 no_challenge = False
                 if current_player.has_card(card):
                     influence = challenger.lose_influence()
-                    current_player.change_card(self.deck, card)
+                    new_card = current_player.change_card(self.deck, card)
+                    current_player.request_send_new_card_after_challenge(card, new_card)
                     challenge_won = True
                     self.signal_lost_influence(challenger, influence)
                 else:
@@ -259,7 +278,8 @@ class Game:
                     self.signal_challenge(player_blocker, card, current_player)
                     if player_blocker.has_card(card):
                         influence = current_player.lose_influence()
-                        player_blocker.change_card(self.deck, card)
+                        new_card = player_blocker.change_card(self.deck, card)
+                        player_blocker.request_send_new_card_after_challenge(card, new_card)
                         self.signal_lost_influence(current_player, influence)
                     else:
                         influence = player_blocker.lose_influence()
@@ -271,7 +291,8 @@ class Game:
                             self.signal_challenge(player_blocker, card, spectator)
                             if player_blocker.has_card(card):
                                 influence = spectator.lose_influence()
-                                player_blocker.change_card(self.deck, card)
+                                new_card = player_blocker.change_card(self.deck, card)
+                                player_blocker.request_send_new_card_after_challenge(card, new_card)
                                 self.signal_lost_influence(spectator, influence)
                             else:
                                 influence = player_blocker.lose_influence()
