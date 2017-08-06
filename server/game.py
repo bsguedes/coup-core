@@ -34,7 +34,9 @@ class Game:
                     if action.is_valid(players, player_index):
                         self.signal_new_turn(player_index)
                         if action.target:
-                            self.signal_targetted_action(current_player, action, action.target)
+                            self.signal_targeted_action(current_player, action, action.target)
+                            if not action.target.is_alive():
+                                raise ValueError()  # targeting an elimitated player
                         else:
                             self.signal_player_action(current_player, action)
                         # resolve
@@ -106,7 +108,7 @@ class Game:
             if player.is_alive():
                 player.signal_new_turn(self.players[player_index].id)
 
-    def signal_targetted_action(self, current_player, action, action_target):
+    def signal_targeted_action(self, current_player, action, action_target):
         print(current_player.id + ' is targeting ' + action_target.id + ' with ' + action.get_identifier())
         for player in self.players:
             if player.is_alive():
@@ -136,7 +138,6 @@ class Game:
         other_players.remove(player1)
         if player2:
             other_players.remove(player2)
-        # TODO retirei shuffle pois nao funcionava (sempre retornava none)
         return other_players
 
     def resolve_assassination_and_extortion(self, current_player, action):
@@ -176,7 +177,7 @@ class Game:
         if no_challenge:
             payload = target.request_tries_to_block(action, current_player)
             card = payload['card']
-            if payload['attempt_block']:
+            if payload['attempt_block'] and card in action.blockers:
                 self.signal_blocking(current_player, action, target, card)
                 no_block = False
                 if current_player.request_challenge(action, target, card):
@@ -271,7 +272,7 @@ class Game:
         for player_blocker in self.random_other_players(current_player):
             payload = player_blocker.request_tries_to_block(action, current_player)
             card = payload['card']
-            if payload['attempt_block']:
+            if payload['attempt_block'] and card in action.blockers:
                 self.signal_blocking(current_player, action, player_blocker, card)
                 no_block = False
                 if current_player.request_challenge(action, player_blocker, card):

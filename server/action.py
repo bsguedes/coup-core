@@ -37,6 +37,9 @@ class Action:
             return Exchange()
         elif dict['action'] == constants.COUP:
             return CoupDEtat(get_player_by_name(players, dict['target']))
+        else:
+            # invalid action
+            raise ValueError()
 
 
 class CoupDEtat(Action):
@@ -98,11 +101,14 @@ class Investigate(Action):
 
     def resolve_action(self, current_player=None, deck=None):
         target_card = self.target.request_give_card_to_inquisitor(current_player)
-        if current_player.request_show_card_to_inquisitor(self.target, target_card):
-            new_card = self.target.draw_card_then_send_card_to_deck(deck, target_card)
-            self.target.request_card_returned_from_investigation(current_player, False, new_card)
+        if self.target.has_card(target_card):
+            if current_player.request_show_card_to_inquisitor(self.target, target_card):
+                new_card = self.target.draw_card_then_send_card_to_deck(deck, target_card)
+                self.target.request_card_returned_from_investigation(current_player, False, new_card)
+            else:
+                self.target.request_card_returned_from_investigation(current_player, True, target_card)
         else:
-            self.target.request_card_returned_from_investigation(current_player, True, target_card)
+            raise ValueError()  # player shows an invalid card
 
 
 class Exchange(Action):
@@ -116,7 +122,10 @@ class Exchange(Action):
     def resolve_action(self, current_player=None, deck=None):
         new_card = deck.draw_card()
         removed_card = current_player.request_inquisitor_choose_card_to_return(new_card)
-        current_player.change_cards(deck, new_card, removed_card)
+        if removed_card == new_card or current_player.has_card(removed_card):
+            current_player.change_cards(deck, new_card, removed_card)
+        else:
+            raise ValueError()  # player tried to return an invalid card
 
 
 class Assassinate(Action):

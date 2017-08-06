@@ -102,7 +102,7 @@ class PlayerStub:
     def signal_challenge(self, acting_opponent, card, challenged_opponent):
         pass
 
-    def signal_action(self, opponent, action, targetted_opponent):
+    def signal_action(self, opponent, action, targeted_opponent):
         pass
 
     # Common interactions
@@ -111,11 +111,14 @@ class PlayerStub:
         return self.coins
 
     def lose_influence(self):
-        #TODO check if player is not cheating
         card_to_lose = self.request_lose_influence()
-        self.dead_cards.append(card_to_lose)
-        self.remove_card(card_to_lose)
-        return card_to_lose
+        if card_to_lose in self.cards:
+            self.dead_cards.append(card_to_lose)
+            self.remove_card(card_to_lose)
+            return card_to_lose
+        else:
+            # this is cheating
+            raise ValueError()
 
     def draw_card_then_send_card_to_deck(self, deck, target_card):
         new_card = self.take_card_from_deck(deck)
