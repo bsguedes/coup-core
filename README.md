@@ -45,9 +45,9 @@ Actions may be targeted, blockable and/or challengeable:
 
 ## Server Calls (cannot be ignored)
 
-###server POST /start
+### server POST /start
 
-#####request payload
+##### request payload
 ```
 { 
     "you": player,
@@ -61,21 +61,21 @@ Actions may be targeted, blockable and/or challengeable:
 }
 ```
 
-#####response status
+##### response status
 
 201: OK
 
-###server GET /play/
+### server GET /play/
 
-#####request headers
+##### request headers
 
 `Must-Coup: ("true", "false")`
 
-#####response status
+##### response status
 
 200: OK
 
-#####response payload
+##### response payload
 ```
 {
     "action": action<non_targetted>
@@ -90,19 +90,19 @@ OR
 }
 ```
 
-###server GET /tries_to_block/
+### server GET /tries_to_block/
 
-#####request headers
+##### request headers
 
 `Action: action<blockable>`
 
 `Player: player`
 
-#####response status
+##### response status
 
 200: OK
 
-#####response payload
+##### response payload
 ```
 {
     "attempt_block": bool
@@ -110,9 +110,9 @@ OR
 }
 ```
 
-###server GET /challenge/
+### server GET /challenge/
 
-#####request headers
+##### request headers
 
 `Action: action<challengeable>`
 
@@ -120,20 +120,20 @@ OR
 
 `Card: card`
 
-#####response status
+##### response status
 
 200: OK
 
-#####response payload
+##### response payload
 ```
 {
     "challenges": bool
 }
 ```
 
-###server POST /new_card_from_challenge/
+### server POST /new_card_from_challenge/
 
-#####request payload
+##### request payload
 ```
 {
 	"old_card": card,
@@ -141,62 +141,62 @@ OR
 }
 ```
 
-#####response status
+##### response status
 
 201: OK
 
-###server GET /lose_influence/
+### server GET /lose_influence/
 
-#####response status
+##### response status
 
 200: OK
 
-#####response payload
+##### response payload
 ```
 { 
     "card": card
 }
 ```
 
-###server GET /inquisitor/give_card_to_inquisitor/
+### server GET /inquisitor/give_card_to_inquisitor/
 
-#####request headers
+##### request headers
 
 `Player: player`
 
-#####response status
+##### response status
 
 200: OK
 
-#####response payload
+##### response payload
 ```
 { 
     "card": card
 }
 ```
 
-###server GET /inquisitor/show_card_to_inquisitor/
+### server GET /inquisitor/show_card_to_inquisitor/
 
-#####request headers
+##### request headers
 
 `Player: player`
 
 `Card: card`
 
-#####response status
+##### response status
 
 200: OK
 
-#####response payload
+##### response payload
 ```
 {
     "change_card": bool
 }
 ```
 
-###server POST /inquisitor/card_returned_from_investigation/
+### server POST /inquisitor/card_returned_from_investigation/
 
-#####request payload
+##### request payload
 ```
 {
     "player": player,
@@ -205,32 +205,32 @@ OR
 }
 ```
 
-#####response status
+##### response status
 
 201: OK
 
-###server GET /inquisitor/choose_card_to_return/
+### server GET /inquisitor/choose_card_to_return/
 
-#####request headers
+##### request headers
 
 `Card: card`
 
-#####response status
+##### response status
 
 200: OK
 
-#####response payload
+##### response payload
 ```
 { 
     "card": card
 }
 ```
 
-##Server Signals (can be ignored)
+## Server Signals (can be ignored)
 
-###server POST /signal/status
+### server POST /signal/status
 
-#####request payload
+##### request payload
 ```
 {
     [
@@ -239,18 +239,18 @@ OR
 }
 ```
 
-###server POST /signal/new_turn
+### server POST /signal/new_turn
 
-#####request payload
+##### request payload
 ```
 {
     "player": player
 }
 ```
 
-###server POST /signal/blocking
+### server POST /signal/blocking
 
-#####request payload
+##### request payload
 ```
 {
     "player_acting": player,
@@ -260,9 +260,9 @@ OR
 }
 ```
 
-###server POST /signal/lost_influence
+### server POST /signal/lost_influence
 
-#####request payload
+##### request payload
 ```
 {
     "player": player,
@@ -270,9 +270,9 @@ OR
 }
 ```
 
-###server POST /signal/challenge
+### server POST /signal/challenge
 
-#####request payload
+##### request payload
 ```
 {
     "challenger": player,
@@ -281,9 +281,9 @@ OR
 }
 ```
 
-###server POST /signal/action
+### server POST /signal/action
 
-#####request payload
+##### request payload
 ```
 {
     "player_acting": player,
