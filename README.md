@@ -1,11 +1,21 @@
 # coup-core
 Coup Core using Django/Python
 
-## Rules
+## How to run
 
-TODO
+This project contains the engine for Coup. It runs as a server that accepts clients through a REST API interface, described on the next sections.
 
-## Types
+To launch this engine, just run `main.py` via a Python interpreter. You'll need to have the clients up and running.
+
+To config which players will play the game, simply enter their URLs on `settings.py`. Do not enter more than 6 players. 
+
+A client must implement and respond to all Server Calls via GET or POST. All Status calls are optional and do not need to be responded.
+
+## Game Rules
+
+You can find the rules for Coup on BoardGameGeek forums.
+
+## Defined Types
 
 **player:** a player string IP (e.g. `"192.168.0.10"`)
 
@@ -24,7 +34,7 @@ If a card is hidden it is equal to null.
     "coins": integer
 }
 ```
-actions may be targeted, blockable and/or challengeable
+Actions may be targeted, blockable and/or challengeable:
 
 `action<targeted>: ("coup", "assassinate", "investigate", "extortion")`
 
@@ -37,7 +47,7 @@ actions may be targeted, blockable and/or challengeable
 
 ###server POST /start
 
-#####payload
+#####request payload
 ```
 { 
     "you": player,
@@ -50,17 +60,22 @@ actions may be targeted, blockable and/or challengeable
     ] 
 }
 ```
-expects 201: OK
+
+#####response status
+
+201: OK
 
 ###server GET /play/
 
-#####headers
+#####request headers
 
 `Must-Coup: ("true", "false")`
 
-expects 200: OK
+#####response status
 
-#####payload
+200: OK
+
+#####response payload
 ```
 {
     "action": action<non_targetted>
@@ -77,15 +92,17 @@ OR
 
 ###server GET /tries_to_block/
 
-#####headers
+#####request headers
 
 `Action: action<blockable>`
 
 `Player: player`
 
-expects 200: OK
+#####response status
 
-#####payload
+200: OK
+
+#####response payload
 ```
 {
     "attempt_block": bool
@@ -95,7 +112,7 @@ expects 200: OK
 
 ###server GET /challenge/
 
-#####headers
+#####request headers
 
 `Action: action<challengeable>`
 
@@ -103,9 +120,11 @@ expects 200: OK
 
 `Card: card`
 
-expects 200: OK
+#####response status
 
-#####payload
+200: OK
+
+#####response payload
 ```
 {
     "challenges": bool
@@ -114,7 +133,7 @@ expects 200: OK
 
 ###server POST /new_card_from_challenge/
 
-#####payload
+#####request payload
 ```
 {
 	"old_card": card,
@@ -122,13 +141,17 @@ expects 200: OK
 }
 ```
 
-expects 201: OK
+#####response status
+
+201: OK
 
 ###server GET /lose_influence/
 
-expects 200: OK
+#####response status
 
-#####payload
+200: OK
+
+#####response payload
 ```
 { 
     "card": card
@@ -137,13 +160,15 @@ expects 200: OK
 
 ###server GET /inquisitor/give_card_to_inquisitor/
 
-#####headers
+#####request headers
 
 `Player: player`
 
-expects 200: OK
+#####response status
 
-#####payload
+200: OK
+
+#####response payload
 ```
 { 
     "card": card
@@ -152,15 +177,17 @@ expects 200: OK
 
 ###server GET /inquisitor/show_card_to_inquisitor/
 
-#####headers
+#####request headers
 
 `Player: player`
 
 `Card: card`
 
-expects 200: OK
+#####response status
 
-#####payload
+200: OK
+
+#####response payload
 ```
 {
     "change_card": bool
@@ -169,7 +196,7 @@ expects 200: OK
 
 ###server POST /inquisitor/card_returned_from_investigation/
 
-#####payload
+#####request payload
 ```
 {
     "player": player,
@@ -178,17 +205,21 @@ expects 200: OK
 }
 ```
 
-expects 201: OK
+#####response status
+
+201: OK
 
 ###server GET /inquisitor/choose_card_to_return/
 
-#####headers
+#####request headers
 
 `Card: card`
 
-expects 200: OK
+#####response status
 
-#####payload
+200: OK
+
+#####response payload
 ```
 { 
     "card": card
@@ -199,7 +230,7 @@ expects 200: OK
 
 ###server POST /signal/status
 
-#####payload
+#####request payload
 ```
 {
     [
@@ -208,22 +239,18 @@ expects 200: OK
 }
 ```
 
-expects 201: OK
-
 ###server POST /signal/new_turn
 
-#####payload
+#####request payload
 ```
 {
     "player": player
 }
 ```
 
-expects 201: OK
-
 ###server POST /signal/blocking
 
-#####payload
+#####request payload
 ```
 {
     "player_acting": player,
@@ -233,11 +260,9 @@ expects 201: OK
 }
 ```
 
-expects 201: OK
-
 ###server POST /signal/lost_influence
 
-#####payload
+#####request payload
 ```
 {
     "player": player,
@@ -245,11 +270,9 @@ expects 201: OK
 }
 ```
 
-expects 201: OK
-
 ###server POST /signal/challenge
 
-#####payload
+#####request payload
 ```
 {
     "challenger": player,
@@ -258,11 +281,9 @@ expects 201: OK
 }
 ```
 
-expects 201: OK
-
 ###server POST /signal/action
 
-#####payload
+#####request payload
 ```
 {
     "player_acting": player,
@@ -270,7 +291,7 @@ expects 201: OK
 }
 ```
 
-OR
+OR (if targeted)
 
 ```
 {
