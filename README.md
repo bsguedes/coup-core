@@ -1,5 +1,6 @@
 # coup-core
-Coup Core using Django/Python
+
+Coup Core Server
 
 ## How to run
 
