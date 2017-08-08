@@ -19,15 +19,15 @@ In Coup, you want to be the last player with influence in the game, with influen
 
 Each player starts the game with two coins and two influence – i.e., two face-down character cards; the fifteen card deck consists of three copies of five different characters, each with a unique set of powers:
 
-**Duke**: Take three coins from the treasury. Block someone from taking foreign aid.
+* **Duke**: Take three coins from the treasury. Block someone from taking foreign aid.
 
-**Assassin**: Pay three coins and try to assassinate another player's character.
+* **Assassin**: Pay three coins and try to assassinate another player's character.
 
-**Contessa**: Block an assassination attempt against yourself.
+* **Contessa**: Block an assassination attempt against yourself.
 
-**Captain**: Take two coins from another player, or block someone from stealing coins from you.
+* **Captain**: Take two coins from another player, or block someone from stealing coins from you.
 
-**Inquisitor**: Draw one character card from the Court deck and choose whether or not to exchange it with one of your face-down characters. OR Force an opponent to show you one of their character cards (their choice which). If you wish it, you may then force them to draw a new card from the Court deck. They then shuffle the old card into the Court deck. Block someone from stealing coins from you.
+* **Inquisitor**: Draw one character card from the Court deck and choose whether or not to exchange it with one of your face-down characters. OR Force an opponent to show you one of their character cards (their choice which). If you wish it, you may then force them to draw a new card from the Court deck. They then shuffle the old card into the Court deck. Block someone from stealing coins from you.
 
 On your turn, you can take any of the actions listed above, regardless of which characters you actually have in front of you, or you can take one of three other actions:
 
@@ -45,11 +45,11 @@ The last player to still have influence – that is, a face-down character – w
 
 ## Defined Types
 
-**player:** a player string IP (e.g. `"192.168.0.10"`)
+* **player:** a player string IP (e.g. `"192.168.0.10"`)
 
-**card:** one of five cards `("duke", "contessa", "assassin", "captain", "inquisitor")`
+* **card:** one of five cards `("duke", "contessa", "assassin", "captain", "inquisitor")`
 
-**action**: one of eight actions `("income", "foreign_aid", "collect_taxes", "assassinate", "extortion", "investigate", "exchange", "coup")`
+* **action**: one of eight actions `("income", "foreign_aid", "collect_taxes", "assassinate", "extortion", "investigate", "exchange", "coup")`
 
 **player_descriptor:** 
 Contains public information of a player. 
