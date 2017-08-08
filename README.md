@@ -13,7 +13,7 @@ A client must implement and respond to all Server Calls via GET or POST. All Sta
 
 ## Game Rules
 
-From BoardGameGeek game description:https://boardgamegeek.com/boardgame/131357/coup
+From BoardGameGeek game description: https://boardgamegeek.com/boardgame/131357/coup
 
 In Coup, you want to be the last player with influence in the game, with influence being represented by face-down character cards in your playing area.
 
