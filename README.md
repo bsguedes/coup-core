@@ -31,11 +31,11 @@ Each player starts the game with two coins and two influence – i.e., two face-
 
 On your turn, you can take any of the actions listed above, regardless of which characters you actually have in front of you, or you can take one of three other actions:
 
-**Income**: Take one coin from the treasury.
+* **Income**: Take one coin from the treasury.
 
-**Foreign aid**: Take two coins from the treasury.
+* **Foreign aid**: Take two coins from the treasury.
 
-**Coup**: Pay seven coins and launch a coup against an opponent, forcing that player to lose an influence. (If you have ten coins or more, you must take this action.)
+* **Coup**: Pay seven coins and launch a coup against an opponent, forcing that player to lose an influence. (If you have ten coins or more, you must take this action.)
 
 When you take one of the character actions – whether actively on your turn, or defensively in response to someone else's action – that character's action automatically succeeds unless an opponent challenges you. In this case, if you can't (or don't) reveal the appropriate character, you lose an influence, turning one of your characters face-up. Face-up characters cannot be used, and if both of your characters are face-up, you're out of the game.
 
@@ -51,7 +51,7 @@ The last player to still have influence – that is, a face-down character – w
 
 * **action**: one of eight actions `("income", "foreign_aid", "collect_taxes", "assassinate", "extortion", "investigate", "exchange", "coup")`
 
-**player_descriptor:** 
+* **player_descriptor:** 
 Contains public information of a player. 
 If a card is hidden it is equal to null.
 ```
