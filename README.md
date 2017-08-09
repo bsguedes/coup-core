@@ -165,8 +165,8 @@ OR
 ##### request payload
 ```
 {
-	"old_card": card,
-	"new_card": card
+    "old_card": card,
+    "new_card": card
 }
 ```
 
